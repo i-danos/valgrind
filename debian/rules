@@ -12,7 +12,10 @@ LDFLAGS  = $(shell dpkg-buildflags --get LDFLAGS)
 	dh $@ --parallel --with=autoreconf
 
 override_dh_auto_configure:
-	dh_auto_configure -- --enable-tls CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
+	# Modern MPI headers (openmpi in trixie) dropped several MPI-2 combiner
+	# enums that this valgrind version's bundled libmpiwrap.c still
+	# references; disable the optional MPI wrapper rather than patch it.
+	dh_auto_configure -- --enable-tls --without-mpicc CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)"
 
 override_dh_auto_test:
 	: # do nothing for now
